@@ -30,7 +30,22 @@ public class FakeStoreApi implements ProductService{
     }
     @Override
     public List<Product> getAllProducts(){
-        return new ArrayList<>();
+        // due to type erasure at run time we can't use the collections in the json type in the api call.
+        // since array don't use collections in the background their will not be a problem
+       ProductDto[] results = restTemplate.getForObject("https://fakestoreapi.com/products",ProductDto[].class);
+
+       List<Product> output = new ArrayList<>();
+
+       if(results==null)
+       {
+           return new ArrayList<>();
+       }
+       for(ProductDto p : results)
+       {
+           output.add(p.toProduct());
+       }
+
+       return output;
     }
 
 
